@@ -20,9 +20,8 @@ AM_MAKEINFOFLAGS =                                              \
   --set-customization-variable=AVOID_MENU_REDUNDANCY=true       \
   --set-customization-variable=ICONS=true
 
-info_TEXINFOS = %D%/bison.texi
+info_TEXINFOS =
 %C%_bison_TEXINFOS =                            \
-  $(CROSS_OPTIONS_TEXI)                         \
   %D%/fdl.texi                                  \
   %D%/gpl-3.0.texi                              \
   %D%/relocatable.texi
@@ -39,7 +38,9 @@ TEXI2DVI = texi2dvi --build-dir=%D%/bison.t2d -I %D%
 CLEANDIRS += %D%/bison.t2d
 
 MOSTLYCLEANFILES += $(top_srcdir)/%D%/*.tmp
+MAINTAINERCLEANFILES =
 
+if ! CROSS_COMPILING
 CROSS_OPTIONS_PL = $(top_srcdir)/build-aux/cross-options.pl
 CROSS_OPTIONS_TEXI = $(top_srcdir)/%D%/cross-options.texi
 $(CROSS_OPTIONS_TEXI): %D%/bison.help $(CROSS_OPTIONS_PL)
@@ -52,7 +53,10 @@ $(CROSS_OPTIONS_TEXI): %D%/bison.help $(CROSS_OPTIONS_PL)
 	  <$(top_srcdir)/%D%/bison.help >$@.tmp
 	$(AM_V_at)diff -u $@~ $@.tmp || true
 	$(AM_V_at)mv $@.tmp $@
-MAINTAINERCLEANFILES = $(CROSS_OPTIONS_TEXI)
+MAINTAINERCLEANFILES += $(CROSS_OPTIONS_TEXI)
+info_TEXINFOS += %D%/bison.texi
+%C%_bison_TEXINFOS += $(CROSS_OPTIONS_TEXI)
+endif
 
 
 # Fix Info's @code in @deftype
@@ -126,7 +130,7 @@ endif ! CROSS_COMPILING
 ## Man Pages.  ##
 ## ----------- ##
 
-dist_man_MANS = $(top_srcdir)/%D%/bison.1
+dist_man_MANS =
 
 EXTRA_DIST += $(dist_man_MANS:.1=.x)
 MAINTAINERCLEANFILES += $(dist_man_MANS)
@@ -137,6 +141,7 @@ remove_time_stamp = \
 
 # Depend on configure to get version number changes.
 if ! CROSS_COMPILING
+dist_man_MANS += $(top_srcdir)/%D%/bison.1
 MAN_DEPS = %D%/bison.help %D%/bison.x $(top_srcdir)/configure
 endif
 
